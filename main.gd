@@ -11,6 +11,7 @@ var MIN_BAR_HEIGHT := 2  # Minimum height of each bar in pixels
 var waveform_sample_count: int
 var viewport_size: Vector2
 
+
 func _ready():
     viewport_size = get_viewport().get_visible_rect().size
 
@@ -29,6 +30,7 @@ func _ready():
     player.stream = song
     player.play()
 
+
 func _process(delta: float) -> void:
     # Scroll visualizer based on sample_rate (ms per bar)
     var player = $AudioStreamPlayer
@@ -43,6 +45,7 @@ func _process(delta: float) -> void:
             var pixels_per_frame = pixels_per_ms * (delta * 1000)
             waveform_visualizer.position.x -= pixels_per_frame
 
+
 func process_audio_data(audio_data, sample_rate):
     var waveform = []
     var bytes_per_sample = 2  # 16-bit audio
@@ -51,7 +54,7 @@ func process_audio_data(audio_data, sample_rate):
     var samples_per_bar = int(sample_rate * ms_per_bar / 1000.0)
     waveform_sample_count = int(total_samples / samples_per_bar)
     for i in range(waveform_sample_count):
-        var sum = 0.0
+        var squared_sum = 0.0
         var count = 0
         var start_sample = i * samples_per_bar
         var end_sample = min(start_sample + samples_per_bar, total_samples)
@@ -61,11 +64,13 @@ func process_audio_data(audio_data, sample_rate):
                 var sample = audio_data[byte_index] | (audio_data[byte_index + 1] << 8)
                 if sample >= 0x8000:
                     sample -= 0x10000
-                var normalized_sample = float(sample) / 32768.0 # Normalize to -1.0 to 1.0 range
-                sum += abs(normalized_sample)
+                var normalized_sample = float(sample) / 32768.0  # Normalize to -1.0 to 1.0 range
+                squared_sum += normalized_sample * normalized_sample
                 count += 1
         if count > 0:
-            waveform.append(sum / count)
+            var mean = squared_sum / count
+            var rms = sqrt(mean)
+            waveform.append(rms)
         else:
             waveform.append(0.0)
     return waveform

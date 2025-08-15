@@ -2,11 +2,11 @@ extends Node2D
 
 # Configs for waveform display
 const MS_PER_BAR := 125  # How much time (in ms) each bar represents
-const WAVEFORM_HEIGHT := 400
+const WAVEFORM_HEIGHT := 600
 const WAVEFORM_COLOR := Color(1, 1, 1)
 var MIN_BAR_HEIGHT := 2  # Minimum height of each bar in pixels
 var BAR_WIDTH := 10  # Width of each bar in pixels
-var BAR_SPACING := 4  # Space between bars in pixels
+var BAR_SPACING := 10  # Space between bars in pixels
 
 var output_latency := 0.0
 

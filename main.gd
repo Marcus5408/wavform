@@ -4,10 +4,11 @@ extends Node2D
 const MS_PER_BAR := 125  # How much time (in ms) each bar represents
 const WAVEFORM_HEIGHT := 400
 const WAVEFORM_COLOR := Color(1, 1, 1)
-var MIN_BAR_HEIGHT := 1  # Minimum height of each bar in pixels
+var MIN_BAR_HEIGHT := 2  # Minimum height of each bar in pixels
 var BAR_WIDTH := 10  # Width of each bar in pixels
 var BAR_SPACING := 4  # Space between bars in pixels
 
+var output_latency := 0.0
 
 func _ready():
     var player = $AudioStreamPlayer
@@ -22,18 +23,19 @@ func _ready():
         (viewport_size.y / 2) - (waveform_visualizer.size.y / 2)
     )
 
+    output_latency = AudioServer.get_output_latency()
     player.play()
 
 func _process(_delta: float) -> void:
     var waveform_visualizer = $WaveformVisualizer
     var audio_player = $AudioStreamPlayer
     if audio_player.playing:
-        var time = audio_player.get_playback_position() + AudioServer.get_time_since_last_mix() - AudioServer.get_output_latency()
+        var time = audio_player.get_playback_position() + AudioServer.get_time_since_last_mix() - output_latency
         # Use audio_player.get_playback_position() for accurate sync
         var playback_pos = time * 1000  # ms
         var bar_offset = float(playback_pos / MS_PER_BAR)
         var move_x = -(bar_offset * (BAR_WIDTH + BAR_SPACING))
-        waveform_visualizer.position.x = move_x + get_viewport_rect().size.x / 2
+        waveform_visualizer.position.x = move_x + (get_viewport_rect().size.x / 2)
 
 func process_audio_data(audio_data):
     var waveform_data: Array = []
@@ -53,7 +55,16 @@ func process_audio_data(audio_data):
         var sum = 0.0
         var count = 0
         for j in range(i, min(i + samples_per_bar * bytes_per_sample, audio_data.size()), bytes_per_sample):
-            var sample = audio_data.decode_s16(j)  # normalize to [-1, 1]
+            var sample = 0.0
+            match bit_size:
+                8:
+                    sample = audio_data.decode_u8(j) - 128 / 128.0  # 8-bit unsigned to [-1, 1]
+                16:
+                    sample = audio_data.decode_s16(j) / 32768.0  # 16-bit signed to [-1, 1]
+                32:
+                    sample = audio_data.decode_s32(j) / 2147483648.0  # 32-bit signed to [-1, 1]
+                _:
+                    sample = sample / (2 ** (bit_size - 1))  # normalize other bit sizes
             sum += abs(sample)
             count += 1
         var loudness = sum / max(count, 1)

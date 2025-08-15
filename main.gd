@@ -1,113 +1,109 @@
 extends Node2D
 
 # Configs for waveform display
-const MS_PER_BAR := 250
-const WAVEFORM_HEIGHT := 200
+const MS_PER_BAR := 125  # How much time (in ms) each bar represents
+const WAVEFORM_HEIGHT := 400
 const WAVEFORM_COLOR := Color(1, 1, 1)
-var BAR_WIDTH := 6  # Width of each bar in pixels
-var BAR_SPACING := 2  # Space between bars in pixels
-var MIN_BAR_HEIGHT := 2  # Minimum height of each bar in pixels
-
-var waveform_sample_count: int
-var viewport_size: Vector2
+var MIN_BAR_HEIGHT := 1  # Minimum height of each bar in pixels
+var BAR_WIDTH := 10  # Width of each bar in pixels
+var BAR_SPACING := 4  # Space between bars in pixels
 
 
 func _ready():
-    viewport_size = get_viewport().get_visible_rect().size
-
-    var song = load("res://matsuri-fujiikaze.wav")
-    var audio_data = song.get_data()
-    var sample_rate = song.get_mix_rate()
-    var waveform = process_audio_data(audio_data, sample_rate)
-
-    var waveform_visualizer = create_waveform_visualizer(waveform, WAVEFORM_HEIGHT, BAR_WIDTH, BAR_SPACING, MIN_BAR_HEIGHT)
-    add_child(waveform_visualizer)
-
-    # set left side of visualizer to be in the middle of the screen
-    waveform_visualizer.position = Vector2(viewport_size.x / 2, (viewport_size.y - WAVEFORM_HEIGHT) / 2)
-
     var player = $AudioStreamPlayer
-    player.stream = song
+    player.stream = AudioStreamWAV.load_from_file("res://sayitback-tvroom.wav")
+
+    var processed_data = process_audio_data(player.stream.data)
+    var waveform_visualizer = create_waveform_visualizer(processed_data, MIN_BAR_HEIGHT, WAVEFORM_HEIGHT, BAR_WIDTH, BAR_SPACING)
+    add_child(waveform_visualizer)
+    var viewport_size: Vector2 = get_viewport_rect().size
+    waveform_visualizer.position = Vector2(
+        viewport_size.x / 2,
+        (viewport_size.y / 2) - (waveform_visualizer.size.y / 2)
+    )
+
     player.play()
 
+func _process(_delta: float) -> void:
+    var waveform_visualizer = $WaveformVisualizer
+    var audio_player = $AudioStreamPlayer
+    if audio_player.playing:
+        var time = audio_player.get_playback_position() + AudioServer.get_time_since_last_mix() - AudioServer.get_output_latency()
+        # Use audio_player.get_playback_position() for accurate sync
+        var playback_pos = time * 1000  # ms
+        var bar_offset = float(playback_pos / MS_PER_BAR)
+        var move_x = -(bar_offset * (BAR_WIDTH + BAR_SPACING))
+        waveform_visualizer.position.x = move_x + get_viewport_rect().size.x / 2
 
-func _process(delta: float) -> void:
-    # Scroll visualizer based on sample_rate (ms per bar)
-    var player = $AudioStreamPlayer
-    if player.playing:
-        var waveform_visualizer = get_node_or_null("WaveformVisualizer")
-        if not waveform_visualizer:
-            push_error("Waveform visualizer not found! What the...")
-            return  # Exit if the visualizer is not found
-        if waveform_visualizer:
-            # Calculate pixels per millisecond using bar width + spacing and MS_PER_BAR
-            var pixels_per_ms = float(BAR_WIDTH + BAR_SPACING) / MS_PER_BAR
-            var pixels_per_frame = pixels_per_ms * (delta * 1000)
-            waveform_visualizer.position.x -= pixels_per_frame
-
-
-func process_audio_data(audio_data, sample_rate):
-    var waveform = []
-    var bytes_per_sample = 2  # 16-bit audio
-    var ms_per_bar = MS_PER_BAR
-    var total_samples = audio_data.size() / bytes_per_sample
-    var samples_per_bar = int(sample_rate * ms_per_bar / 1000.0)
-    waveform_sample_count = int(total_samples / samples_per_bar)
-    for i in range(waveform_sample_count):
-        var squared_sum = 0.0
+func process_audio_data(audio_data):
+    var waveform_data: Array = []
+    # check the WAV file header various info.
+    var sample_rate: int = 44100  # default to 44.1kHz
+    var bit_size: int = 16  # default to 16-bit
+    if audio_data.size() > 44:
+        # read WAV header info
+        sample_rate = audio_data.decode_u32(24)
+        sample_rate = 44100 if sample_rate == 0 else sample_rate
+        bit_size = audio_data.decode_u8(34)
+        bit_size = 16 if bit_size == 0 else bit_size
+    @warning_ignore("integer_division") # just for the line below
+    var bytes_per_sample: int = bit_size / int(8)
+    var samples_per_bar = int((MS_PER_BAR / 1000.0) * sample_rate)
+    for i in range(0, audio_data.size(), samples_per_bar * bytes_per_sample):
+        var sum = 0.0
         var count = 0
-        var start_sample = i * samples_per_bar
-        var end_sample = min(start_sample + samples_per_bar, total_samples)
-        for s in range(start_sample, end_sample):
-            var byte_index = int(s) * bytes_per_sample
-            if byte_index + 1 < audio_data.size():
-                var sample = audio_data[byte_index] | (audio_data[byte_index + 1] << 8)
-                if sample >= 0x8000:
-                    sample -= 0x10000
-                var normalized_sample = float(sample) / 32768.0  # Normalize to -1.0 to 1.0 range
-                squared_sum += normalized_sample * normalized_sample
-                count += 1
-        if count > 0:
-            var mean = squared_sum / count
-            var rms = sqrt(mean)
-            waveform.append(rms)
-        else:
-            waveform.append(0.0)
-    return waveform
+        for j in range(i, min(i + samples_per_bar * bytes_per_sample, audio_data.size()), bytes_per_sample):
+            var sample = audio_data.decode_s16(j)  # normalize to [-1, 1]
+            sum += abs(sample)
+            count += 1
+        var loudness = sum / max(count, 1)
+        waveform_data.append(loudness)
 
+    return waveform_data
 
-func create_waveform_visualizer(waveform_data, max_bar_height, bar_width, bar_spacing, min_bar_height):
-    var max_amplitude = max(0.001, abs(waveform_data.max()))
-    var normalized_waveform = []
-    for value in waveform_data:
-        var normalized = clamp(abs(value) / max_amplitude, 0.0, 1.0)
-        var bar_height = lerp(min_bar_height, max_bar_height, normalized)
-        normalized_waveform.append(bar_height)
+func map_range(value: float, in_min: float, in_max: float, out_min: float, out_max: float) -> float:
+    return (value - in_min) * (out_max - out_min) / (in_max - in_min) + out_min
 
-    var waveform_container = CanvasGroup.new()
-    var bar_count = waveform_data.size()
-    var _total_bars_width = bar_count * bar_width + (bar_count - 1) * bar_spacing
-    var container_height = 0
+func create_waveform_visualizer(raw_waveform: Array, min_bar_height: float, max_bar_height: float, bar_width: float, bar_spacing: int) -> HBoxContainer:
+    # step 1: figure out what the range of raw_waveform's data is
+    var raw_amplitude = [raw_waveform.min(), raw_waveform.max()]
 
-    for i in range(bar_count):
-        var bar = ColorRect.new()
-        bar.color = WAVEFORM_COLOR
-        bar.size = Vector2(bar_width, normalized_waveform[i])
-        bar.position = Vector2(i * (bar_width + bar_spacing), (max_bar_height - normalized_waveform[i]) / 2)
-        waveform_container.add_child(bar)
-        container_height = max(container_height, normalized_waveform[i])
-
-        # Add collision shape for each bar
-        var collision = CollisionShape2D.new()
-        var rect_shape = RectangleShape2D.new()
-        rect_shape.extents = Vector2(bar_width / 2, normalized_waveform[i] / 2)
-        collision.shape = rect_shape
-        # Position collision shape at the center of the bar
-        collision.position = bar.position + Vector2(bar_width / 2, normalized_waveform[i] / 2)
-        waveform_container.add_child(collision)
-
-    # recalculate CanvasGroup size
-    waveform_container.set_fit_margin(20.0)
+    # step 2: map raw_amplitude to bar_height
+    var mapped_waveform: Array = []
+    for value in raw_waveform:
+        var mapped_value = map_range(value, raw_amplitude[0], raw_amplitude[1], min_bar_height, max_bar_height)
+        mapped_waveform.append(mapped_value)
+    
+    # step 3: create a container for the bars
+    var waveform_container = HBoxContainer.new()
     waveform_container.name = "WaveformVisualizer"
+    waveform_container.size = Vector2(bar_width * mapped_waveform.size() + bar_spacing * (mapped_waveform.size() - 1), max_bar_height)
+    waveform_container.add_theme_constant_override("separation", bar_spacing)
+    waveform_container.alignment = HBoxContainer.ALIGNMENT_CENTER
+    waveform_container.z_index = 1000
+    waveform_container.set_anchors_preset(Control.PRESET_CENTER_LEFT)
 
+    # step 4: create bars based on mapped_waveform
+    for index in range(mapped_waveform.size()):
+        var bar_height: float = mapped_waveform[index]
+        # 4-1: lock aspect ratio!
+        var aspect_ratio_container = AspectRatioContainer.new()
+        aspect_ratio_container.ratio = bar_width / bar_height
+        # 4a: create a bar
+        var bar_rect: ColorRect = ColorRect.new()
+        bar_rect.color = WAVEFORM_COLOR
+        bar_rect.size = Vector2(bar_width, bar_height)
+        bar_rect.custom_minimum_size = Vector2(bar_width, bar_height)
+        bar_rect.name = "Bar_%d" % index
+        # 4b: add collision shape
+        var collision: CollisionShape2D = CollisionShape2D.new()
+        var rect_shape: RectangleShape2D = RectangleShape2D.new()
+        rect_shape.extents = Vector2(bar_width / 2, bar_height / 2)
+        collision.shape = rect_shape
+        bar_rect.add_child(collision)
+        # 4c: add the bar to the container
+        aspect_ratio_container.add_child(bar_rect)
+        waveform_container.add_child(aspect_ratio_container)
+
+    # step 5: return the container
     return waveform_container

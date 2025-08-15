@@ -1,11 +1,11 @@
 extends Node2D
 
 # Configs for waveform display
-const MS_PER_BAR := 125  # How much time (in ms) each bar represents
-const WAVEFORM_HEIGHT := 600
+const MS_PER_BAR := 100  # How much time (in ms) each bar represents
+const WAVEFORM_HEIGHT := 800
 const WAVEFORM_COLOR := Color(1, 1, 1)
-var MIN_BAR_HEIGHT := 2  # Minimum height of each bar in pixels
-var BAR_WIDTH := 10  # Width of each bar in pixels
+var MIN_BAR_HEIGHT := 5  # Minimum height of each bar in pixels
+var BAR_WIDTH := 100  # Width of each bar in pixels
 var BAR_SPACING := 10  # Space between bars in pixels
 
 var output_latency := 0.0
@@ -20,7 +20,7 @@ func _ready():
     var viewport_size: Vector2 = get_viewport_rect().size
     waveform_visualizer.position = Vector2(
         viewport_size.x / 2,
-        (viewport_size.y / 2) - (waveform_visualizer.size.y / 2)
+        (viewport_size.y) - (waveform_visualizer.size.y / 2)
     )
 
     output_latency = AudioServer.get_output_latency()

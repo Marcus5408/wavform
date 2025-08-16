@@ -4,7 +4,7 @@ extends Node2D
 const MS_PER_BAR := 100  # How much time (in ms) each bar represents
 const WAVEFORM_HEIGHT := 800
 const WAVEFORM_COLOR := Color(1, 1, 1)
-var MIN_BAR_HEIGHT := 5  # Minimum height of each bar in pixels
+var MIN_BAR_HEIGHT := 1  # Minimum height of each bar in pixels
 var BAR_WIDTH := 100  # Width of each bar in pixels
 var BAR_SPACING := 10  # Space between bars in pixels
 
@@ -12,7 +12,8 @@ var output_latency := 0.0
 
 func _ready():
     var player = $AudioStreamPlayer
-    player.stream = AudioStreamWAV.load_from_file("res://sayitback-tvroom.wav")
+    # player.stream = AudioStreamWAV.load_from_file("res://sayitback-tvroom.wav")
+    player.stream = AudioStreamWAV.load_from_file("res://Matsuri-FujiiKaze.wav")
 
     var processed_data = process_audio_data(player.stream.data)
     var waveform_visualizer = create_waveform_visualizer(processed_data, MIN_BAR_HEIGHT, WAVEFORM_HEIGHT, BAR_WIDTH, BAR_SPACING)
@@ -36,6 +37,11 @@ func _process(_delta: float) -> void:
         var bar_offset = float(playback_pos / MS_PER_BAR)
         var move_x = -(bar_offset * (BAR_WIDTH + BAR_SPACING))
         waveform_visualizer.position.x = move_x + (get_viewport_rect().size.x / 2)
+        # destroy old bars
+        var first_child = waveform_visualizer.get_child(0)
+        if first_child.position.x < -2:
+            waveform_visualizer.remove_child(first_child)
+            first_child.queue_free()
 
 func process_audio_data(audio_data):
     var waveform_data: Array = []
@@ -88,7 +94,7 @@ func create_waveform_visualizer(raw_waveform: Array, min_bar_height: float, max_
     # step 3: create a container for the bars
     var waveform_container = HBoxContainer.new()
     waveform_container.name = "WaveformVisualizer"
-    waveform_container.size = Vector2(bar_width * mapped_waveform.size() + bar_spacing * (mapped_waveform.size() - 1), max_bar_height)
+    waveform_container.size = Vector2(bar_width * mapped_waveform.size() + bar_spacing * (mapped_waveform.size() - 1), max_bar_height * 2)
     waveform_container.add_theme_constant_override("separation", bar_spacing)
     waveform_container.alignment = HBoxContainer.ALIGNMENT_CENTER
     waveform_container.z_index = 1000
@@ -102,7 +108,8 @@ func create_waveform_visualizer(raw_waveform: Array, min_bar_height: float, max_
         aspect_ratio_container.ratio = bar_width / bar_height
         # 4a: create a bar
         var bar_rect: ColorRect = ColorRect.new()
-        bar_rect.color = WAVEFORM_COLOR
+        var rng = RandomNumberGenerator.new()
+        bar_rect.color = Color.from_hsv(rng.randf(),1.0,1.0)
         bar_rect.size = Vector2(bar_width, bar_height)
         bar_rect.custom_minimum_size = Vector2(bar_width, bar_height)
         bar_rect.name = "Bar_%d" % index

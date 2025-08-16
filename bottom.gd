@@ -1,7 +1,7 @@
 extends Node2D
 
 const MS_PER_BAR := 100  # How much time (in ms) each bar represents
-const WAVEFORM_HEIGHT := 400
+const WAVEFORM_HEIGHT := 600
 const WAVEFORM_COLOR := Color(1, 1, 1)
 var MIN_BAR_HEIGHT := 1  # Minimum height of each bar in pixels
 var BAR_WIDTH := 10  # Width of each bar in pixels
@@ -81,8 +81,11 @@ func map_range(value: float, in_min: float, in_max: float, out_min: float, out_m
 func map_waveform(raw_waveform: Array, min_bar_height: float, max_bar_height: float) -> Array:
     var raw_amplitude = [raw_waveform.min(), raw_waveform.max()]
     var result_waveform: Array = []
+    var power := 2.0  # Increase for more aggressive mapping
     for value in raw_waveform:
-        var mapped_value = map_range(value, raw_amplitude[0], raw_amplitude[1], min_bar_height, max_bar_height)
+        var norm = map_range(value, raw_amplitude[0], raw_amplitude[1], 0, 1)
+        var nonlinear = pow(norm, power)
+        var mapped_value = map_range(nonlinear, 0, 1, min_bar_height, max_bar_height)
         result_waveform.append(mapped_value)
     return result_waveform
 

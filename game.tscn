@@ -1,12 +1,12 @@
-[gd_scene load_steps=9 format=3 uid="uid://c13rwup3rkm30"]
+[gd_scene load_steps=9 format=3 uid="uid://c2pg7leon3x3v"]
 
-[ext_resource type="Script" uid="uid://dqx1aorqvs5dk" path="res://bottom.gd" id="1_feb5d"]
-[ext_resource type="Script" uid="uid://dmq4klody8wrj" path="res://top.gd" id="2_fc0e3"]
-[ext_resource type="Script" uid="uid://w5yx8b8wrsrs" path="res://camera.gd" id="3_7jktm"]
-[ext_resource type="Texture2D" uid="uid://dx4nfuesh7bl7" path="res://player.png" id="4_7jktm"]
-[ext_resource type="Script" uid="uid://b1xim0nsdk1ve" path="res://right.gd" id="5_eow3j"]
-[ext_resource type="Script" uid="uid://c54y15quld0pm" path="res://movement.gd" id="5_ryrav"]
-[ext_resource type="PackedScene" uid="uid://c8hj5ug3hcy3u" path="res://lazerbeams.tscn" id="6_eow3j"]
+[ext_resource type="Script" path="res://bottom.gd" id="1_feb5d"]
+[ext_resource type="Script" path="res://top.gd" id="2_fc0e3"]
+[ext_resource type="Script" path="res://camera.gd" id="3_7jktm"]
+[ext_resource type="Texture2D" path="res://player.png" id="4_7jktm"]
+[ext_resource type="Script" path="res://right.gd" id="5_eow3j"]
+[ext_resource type="Script" path="res://movement.gd" id="5_ryrav"]
+[ext_resource type="PackedScene" uid="uid://f36aptivu57r" path="res://lazerbeams.tscn" id="6_eow3j"]
 
 [sub_resource type="GDScript" id="GDScript_h2yge"]
 script/source = "extends Node2D

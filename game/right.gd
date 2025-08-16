@@ -9,8 +9,9 @@ const BAR_SPACING := 10  # Increased gap between bars
 const MIN_DB := 90
 const SMOOTH_FACTOR := 0.15
 var smoothed_energies := []
-const ENEMY_TRIGGER_THRESHOLD := 0.99  # Extremely low sensitivity
-var bar_enemies := []
+const ENEMY_TRIGGER_THRESHOLD := 0.7  # Lowered threshold for more frequent spawning
+var bar_enemies := []  # Store lazerbeam nodes
+var lazerbeam_scene: PackedScene
 
 
 func _ready() -> void:
@@ -21,6 +22,8 @@ func _ready() -> void:
     for i in range(VU_COUNT):
         bar_enemies[i] = null
     set_process(true)
+    # Cache lazerbeam scene
+    lazerbeam_scene = load("res://game/lazerbeams.tscn")
 
 
 func _process(delta: float) -> void:
@@ -41,18 +44,21 @@ func _process(delta: float) -> void:
     for i in range(VU_COUNT):
         smoothed_energies[i] = lerp(smoothed_energies[i], energies[i], 1.0 - SMOOTH_FACTOR)
 
-        # Trigger enemy if energy crosses threshold and not already active
+    # Trigger enemy ONLY on high enough peaks in any frequency
+    for i in range(VU_COUNT):
         if energies[i] >= ENEMY_TRIGGER_THRESHOLD and bar_enemies[i] == null:
-            bar_enemies[i] = {
-                "progress": 0.0,
-                "speed": 1200.0,  # pixels/sec
-                "color": Color.from_hsv(energies[i], 1.0, 1.0)
-            }
-        # Animate enemy if active
-        if bar_enemies[i] != null:
-            bar_enemies[i]["progress"] += bar_enemies[i]["speed"] * delta
-            if bar_enemies[i]["progress"] > HEIGHT:
-                bar_enemies[i] = null
+            var lazerbeam = lazerbeam_scene.instantiate()
+            var viewport_size = get_viewport_rect().size
+            var y = i * (float(viewport_size.y) / VU_COUNT + BAR_SPACING)
+            lazerbeam.position = Vector2(viewport_size.x, y)
+            lazerbeam.length = HEIGHT / 2.0
+            lazerbeam.height = float(viewport_size.y) / VU_COUNT
+            lazerbeam.color = Color.from_hsv(energies[i], 1.0, 1.0, 0.75)
+            add_child(lazerbeam)
+            bar_enemies[i] = lazerbeam
+        # Remove reference if lazerbeam is freed
+        if bar_enemies[i] != null and not is_instance_valid(bar_enemies[i]):
+            bar_enemies[i] = null
 
     queue_redraw()
 
@@ -69,11 +75,3 @@ func _draw():
         var normalized_length = smoothed_energies[i]
         var color = Color.from_hsv(normalized_length, 1.0, 1.0, 0.75)  # 25% transparent
         draw_rect(Rect2(Vector2(x, y), Vector2(bar_length, bar_height)), color)
-
-        # Draw enemy if active
-        if bar_enemies[i] != null:
-            var enemy_length = bar_enemies[i]["progress"]
-            var enemy_x = right_x - enemy_length
-            var enemy_color = bar_enemies[i]["color"]
-            enemy_color.a = 0.75  # 25% transparent
-            draw_rect(Rect2(Vector2(enemy_x, y), Vector2(enemy_length, bar_height)), enemy_color)

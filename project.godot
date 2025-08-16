@@ -14,7 +14,7 @@ config/name="WAV:FORM"
 config/name_localized={
 "en": "WAV:FORM"
 }
-run/main_scene="uid://c13rwup3rkm30"
+run/main_scene="uid://bcxk1ephoi1mk"
 config/features=PackedStringArray("4.4", "GL Compatibility")
 config/icon="res://icon.svg"
 

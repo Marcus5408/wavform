@@ -1,4 +1,5 @@
 extends Node2D
+signal song_faded_out
 
 const MS_PER_BAR := 100  # How much time (in ms) each bar represents
 const WAVEFORM_HEIGHT := 600
@@ -112,6 +113,20 @@ func _draw():
 func fade_out_song():
     var player = $AudioStreamPlayer
     if player.playing:
+        print("Fading out song...")
+        if player.volume_db < -79:
+            print("Already faded out.")
+            return
+        player.volume_db = 0  # Ensure starting from full volume
         var tween = create_tween()
         tween.tween_property(player, "volume_db", -80, 2.0)
-        tween.tween_callback(Callable(player, "stop"))
+        tween.tween_callback(Callable(self, "_on_fade_out_done"))
+        tween.play()
+    else:
+        print("Player not playing.")
+
+func _on_fade_out_done():
+    var player = $AudioStreamPlayer
+    if player.playing:
+        player.stop()
+    emit_signal("song_faded_out")

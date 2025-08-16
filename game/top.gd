@@ -10,6 +10,13 @@ func _ready():
     line.clear_points()
     line.default_color = Color.RED
     line.position = Vector2(0, 0)
+    # Connect to song fade out
+    var bottom = get_tree().get_root().get_node("Node2D/Bottom")
+    if bottom:
+        bottom.connect("song_faded_out", Callable(self, "_on_song_faded_out"))
+
+func _on_song_faded_out():
+    set_process(false)
 
 var smoothed_points := []
 

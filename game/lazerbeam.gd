@@ -24,8 +24,9 @@ func _ready():
 
 
 func _on_body_entered(body):
-    # You may want to check if body is the player here
-    emit_signal("player_touched_lazerbeam", body)
+    if body.is_in_group("player"):
+        print("Player touched lazerbeam!")
+        emit_signal("player_touched_lazerbeam", body)
 
 
 func _process(delta):

@@ -25,6 +25,14 @@ func _ready() -> void:
     set_process(true)
     # Cache lazerbeam scene
     lazerbeam_scene = load("res://game/lazerbeams.tscn")
+    # Connect to song fade out
+    var bottom = get_tree().get_root().get_node("Node2D/Bottom")
+    if bottom:
+        bottom.connect("song_faded_out", Callable(self, "_on_song_faded_out"))
+
+
+func _on_song_faded_out():
+    set_process(false)
 
 
 func _process(_delta: float) -> void:
@@ -81,7 +89,10 @@ func _draw():
 
 
 func _on_player_touched_lazerbeam(body):
-    # Fade out the song when player touches lazerbeam
+    # Fade out the song and tilt/fall/fade root node when player touches lazerbeam
     var bottom = get_tree().get_root().get_node("Node2D/Bottom")
     if bottom:
         bottom.call("fade_out_song")
+    var root = get_tree().get_root().get_node("Node2D")
+    if root:
+        root.call("tilt_and_fall_and_fade")

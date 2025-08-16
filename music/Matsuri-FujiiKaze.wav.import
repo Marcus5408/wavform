@@ -3,12 +3,12 @@
 importer="wav"
 type="AudioStreamWAV"
 uid="uid://5go4ejwwkyc3"
-path="res://.godot/imported/Matsuri-FujiiKaze.wav-60d55fc6ca8e64804299e09e93a781ad.sample"
+path="res://.godot/imported/Matsuri-FujiiKaze.wav-12099f41deb1d2d557112131b2609ca5.sample"
 
 [deps]
 
-source_file="res://Matsuri-FujiiKaze.wav"
-dest_files=["res://.godot/imported/Matsuri-FujiiKaze.wav-60d55fc6ca8e64804299e09e93a781ad.sample"]
+source_file="res://music/Matsuri-FujiiKaze.wav"
+dest_files=["res://.godot/imported/Matsuri-FujiiKaze.wav-12099f41deb1d2d557112131b2609ca5.sample"]
 
 [params]
 

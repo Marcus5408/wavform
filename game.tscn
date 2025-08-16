@@ -1,9 +1,10 @@
-[gd_scene load_steps=7 format=3 uid="uid://c13rwup3rkm30"]
+[gd_scene load_steps=8 format=3 uid="uid://c13rwup3rkm30"]
 
 [ext_resource type="Script" uid="uid://dqx1aorqvs5dk" path="res://bottom.gd" id="1_feb5d"]
 [ext_resource type="Script" uid="uid://dmq4klody8wrj" path="res://top.gd" id="2_fc0e3"]
 [ext_resource type="Script" uid="uid://w5yx8b8wrsrs" path="res://camera.gd" id="3_7jktm"]
 [ext_resource type="Texture2D" uid="uid://dx4nfuesh7bl7" path="res://player.png" id="4_7jktm"]
+[ext_resource type="Script" uid="uid://b1xim0nsdk1ve" path="res://right.gd" id="5_eow3j"]
 [ext_resource type="Script" uid="uid://c54y15quld0pm" path="res://movement.gd" id="5_ryrav"]
 
 [sub_resource type="GDScript" id="GDScript_h2yge"]
@@ -28,8 +29,8 @@ grow_vertical = 2
 color = Color(0, 0, 0, 1)
 
 [node name="Line" type="ColorRect" parent="."]
-offset_left = 640.0
-offset_right = 642.0
+offset_left = 500.0
+offset_right = 502.0
 offset_bottom = 720.0
 
 [node name="Sprite2D" type="Sprite2D" parent="Line"]
@@ -47,6 +48,9 @@ script = ExtResource("1_feb5d")
 script = ExtResource("2_fc0e3")
 
 [node name="Line2D" type="Line2D" parent="Top"]
+
+[node name="Right" type="Node2D" parent="."]
+script = ExtResource("5_eow3j")
 
 [node name="Camera2D" type="Camera2D" parent="."]
 position = Vector2(2, 0)

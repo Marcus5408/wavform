@@ -88,7 +88,7 @@ func _draw():
         draw_rect(Rect2(Vector2(x, y), Vector2(bar_length, bar_height)), color)
 
 
-func _on_player_touched_lazerbeam(body):
+func _on_player_touched_lazerbeam(_body):
     # Fade out the song and tilt/fall/fade root node when player touches lazerbeam
     var bottom = get_parent().get_node("Bottom")
     if bottom:

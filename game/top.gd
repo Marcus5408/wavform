@@ -11,7 +11,7 @@ func _ready():
     line.default_color = Color.RED
     line.position = Vector2(0, 0)
     # Connect to song fade out
-    var bottom = get_tree().get_root().get_node("Node2D/Bottom")
+    var bottom = get_parent().get_node("Bottom")
     if bottom:
         bottom.connect("song_faded_out", Callable(self, "_on_song_faded_out"))
 

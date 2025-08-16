@@ -48,6 +48,7 @@ shape = SubResource("CircleShape2D_y36n6")
 script = ExtResource("4_3vho3")
 
 [node name="AudioStreamPlayer" type="AudioStreamPlayer" parent="Bottom"]
+playback_type = 1
 
 [node name="Top" type="Node2D" parent="."]
 script = ExtResource("5_qf6n1")

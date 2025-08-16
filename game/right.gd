@@ -90,9 +90,9 @@ func _draw():
 
 func _on_player_touched_lazerbeam(body):
     # Fade out the song and tilt/fall/fade root node when player touches lazerbeam
-    var bottom = get_tree().get_root().get_node("Node2D/Bottom")
+    var bottom = get_parent().get_node("Bottom")
     if bottom:
         bottom.call("fade_out_song")
-    var root = get_tree().get_root().get_node("Node2D")
+    var root = get_parent().get_node("Node2D")
     if root:
         root.call("tilt_and_fall_and_fade")

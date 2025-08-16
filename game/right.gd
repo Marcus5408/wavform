@@ -93,6 +93,6 @@ func _on_player_touched_lazerbeam(body):
     var bottom = get_parent().get_node("Bottom")
     if bottom:
         bottom.call("fade_out_song")
-    var root = get_parent().get_node("Node2D")
+    var root = get_parent()
     if root:
         root.call("tilt_and_fall_and_fade")

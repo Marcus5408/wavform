@@ -8,6 +8,3 @@ func _pressed():
 	var tween = get_tree().create_tween()
 	tween.tween_property(game_instance, "position:x", 0, 0.7).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_OUT)
 	tween.tween_callback(Callable(self, "_remove_menu"))
-
-func _remove_menu():
-	get_tree().current_scene.queue_free()

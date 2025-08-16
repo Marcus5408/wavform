@@ -6,13 +6,6 @@ const disturbance: float = 5.0
 const BASS_THRESHOLD: float = 0.45
 var rng := RandomNumberGenerator.new()
 
-# Ensures camera resets when entering the game scene
-func _enter_tree() -> void:
-    var viewport_size: Vector2 = get_viewport_rect().size
-    middle = Vector2(viewport_size.x / 2, viewport_size.y / 2)
-    self.position = Vector2(middle.x, middle.y)
-    self.offset = Vector2(0, 0)
-
 
 func _ready() -> void:
     self.position_smoothing_enabled = true

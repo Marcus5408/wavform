@@ -17,9 +17,9 @@ func _ready() -> void:
     self.position = Vector2(middle.x, middle.y)
 
 
-func _process(delta: float) -> void:
+func _process(_delta: float) -> void:
     spectrum = AudioServer.get_bus_effect_instance(0, 0)
-    if spectrum == null:
+    if spectrum == null or not spectrum is AudioEffectSpectrumAnalyzerInstance:
         self.offset = Vector2(0, 0)
         return
 

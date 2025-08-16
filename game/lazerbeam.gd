@@ -1,6 +1,6 @@
 extends Node2D
 
-@export var speed: float = 1200.0
+@export var speed: float = 600.0
 @export var length: float = 100.0
 @export var height: float = 10.0
 @export var color: Color = Color(1, 0, 0, 0.75)

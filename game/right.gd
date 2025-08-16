@@ -53,7 +53,7 @@ func _process(delta: float) -> void:
             lazerbeam.position = Vector2(viewport_size.x, y)
             lazerbeam.length = HEIGHT / 2.0
             lazerbeam.height = float(viewport_size.y) / VU_COUNT
-            lazerbeam.color = Color.from_hsv(energies[i], 1.0, 1.0, 0.75)
+            lazerbeam.color = Color.from_hsv(energies[i], 1.0, 1.0)
             add_child(lazerbeam)
             bar_enemies[i] = lazerbeam
         # Remove reference if lazerbeam is freed

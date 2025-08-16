@@ -105,5 +105,5 @@ func _draw():
         var x = start_x + i * (BAR_WIDTH + BAR_SPACING)
         var y = center_y - bar_height / 2
         var normalized_height = (bar_height - MIN_BAR_HEIGHT) / float(WAVEFORM_HEIGHT - MIN_BAR_HEIGHT)
-        var color = Color.from_hsv(normalized_height, 1.0, 1.0)
+        var color = Color.from_hsv(normalized_height, 1.0, 1.0, 0.5)
         draw_rect(Rect2(Vector2(x, y), Vector2(BAR_WIDTH, bar_height)), color)

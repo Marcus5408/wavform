@@ -1,11 +1,11 @@
-[gd_scene load_steps=9 format=3 uid="uid://c13rwup3rkm30"]
+[gd_scene load_steps=9 format=3 uid="uid://bchgkayeuoam7"]
 
 [ext_resource type="Script" uid="uid://dppyg2oxajl52" path="res://game/game.gd" id="1_l8g03"]
 [ext_resource type="Texture2D" uid="uid://s5sxuoi1psyn" path="res://game/player.png" id="2_l8g03"]
 [ext_resource type="Script" uid="uid://cuajub65t160x" path="res://game/movement.gd" id="3_j8tme"]
 [ext_resource type="Script" uid="uid://ctkvofi2vjkqt" path="res://game/bottom.gd" id="4_3vho3"]
 [ext_resource type="Script" uid="uid://qhy3irx5j26s" path="res://game/top.gd" id="5_qf6n1"]
-[ext_resource type="PackedScene" uid="uid://c8hj5ug3hcy3u" path="res://game/lazerbeams.tscn" id="6_eow3j"]
+[ext_resource type="PackedScene" uid="uid://cb0hv4i708ufw" path="res://game/lazerbeams.tscn" id="6_eow3j"]
 [ext_resource type="Script" uid="uid://cdoae8f8l46h7" path="res://game/right.gd" id="6_vsp63"]
 [ext_resource type="Script" uid="uid://ccgjan52d03el" path="res://game/camera.gd" id="9_hb504"]
 
@@ -51,6 +51,7 @@ script = ExtResource("5_qf6n1")
 script = ExtResource("6_vsp63")
 
 [node name="Lazerbeams" parent="Right" instance=ExtResource("6_eow3j")]
+position = Vector2(0, 0)
 
 [node name="Camera2D" type="Camera2D" parent="."]
 position = Vector2(2, 0)

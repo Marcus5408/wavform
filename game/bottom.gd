@@ -20,8 +20,15 @@ var waveform_offset := 0.0
 
 func _ready():
     var player = $AudioStreamPlayer
-    # player.stream = AudioStreamWAV.load_from_file("res://Matsuri-FujiiKaze.wav")
-    player.stream = AudioStreamWAV.load_from_file("res://sayitback-tvroom.wav")
+
+    # if not on web
+    if !OS.has_feature("web"):
+        # player.stream = AudioStreamWAV.load_from_file("res://music/Matsuri-FujiiKaze.wav")
+        player.stream = AudioStreamWAV.load_from_file("res://music/sayitback-tvroom.wav")
+    else:
+        # var stream = load("res://music/Matsuri-FujiiKaze.wav")
+        var stream = load("res://music/sayitback-tvroom.wav")
+        player.stream = stream
 
     processed_data = process_audio_data(player.stream.data)
     mapped_waveform = map_waveform(processed_data, MIN_BAR_HEIGHT, WAVEFORM_HEIGHT)

@@ -20,10 +20,10 @@ func _process(_delta: float) -> void:
 
     var VU_COUNT = 32
     var FREQ_MAX = 11050.0
-    var HEIGHT = 400
+    var HEIGHT = 500
     var WIDTH = get_viewport().get_visible_rect().size.x
-    var MIN_DB = 80
-    var SMOOTH_FACTOR = 0.5  # Higher value = smoother
+    var MIN_DB = 90
+    var SMOOTH_FACTOR = 0.15  # Higher value = smoother
 
     var points = []
     var prev_hz = 0.0

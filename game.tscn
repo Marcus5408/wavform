@@ -1,8 +1,10 @@
-[gd_scene load_steps=5 format=3 uid="uid://c13rwup3rkm30"]
+[gd_scene load_steps=7 format=3 uid="uid://c13rwup3rkm30"]
 
 [ext_resource type="Script" uid="uid://dqx1aorqvs5dk" path="res://bottom.gd" id="1_feb5d"]
 [ext_resource type="Script" uid="uid://dmq4klody8wrj" path="res://top.gd" id="2_fc0e3"]
 [ext_resource type="Script" uid="uid://w5yx8b8wrsrs" path="res://camera.gd" id="3_7jktm"]
+[ext_resource type="Texture2D" uid="uid://dx4nfuesh7bl7" path="res://player.png" id="4_7jktm"]
+[ext_resource type="Script" uid="uid://c54y15quld0pm" path="res://movement.gd" id="5_ryrav"]
 
 [sub_resource type="GDScript" id="GDScript_h2yge"]
 script/source = "extends Node2D
@@ -11,22 +13,30 @@ script/source = "extends Node2D
 [node name="Node2D" type="Node2D"]
 script = SubResource("GDScript_h2yge")
 
-[node name="ColorRect" type="ColorRect" parent="."]
+[node name="BG" type="ColorRect" parent="."]
 anchors_preset = 8
 anchor_left = 0.5
 anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
-offset_right = 1280.0
-offset_bottom = 720.0
+offset_left = -23.0
+offset_top = -19.0
+offset_right = 1307.0
+offset_bottom = 751.0
 grow_horizontal = 2
 grow_vertical = 2
 color = Color(0, 0, 0, 1)
 
-[node name="ColorRect2" type="ColorRect" parent="."]
+[node name="Line" type="ColorRect" parent="."]
 offset_left = 640.0
 offset_right = 642.0
 offset_bottom = 720.0
+
+[node name="Sprite2D" type="Sprite2D" parent="Line"]
+position = Vector2(0, 360)
+scale = Vector2(0.15, 0.15)
+texture = ExtResource("4_7jktm")
+script = ExtResource("5_ryrav")
 
 [node name="Bottom" type="Node2D" parent="."]
 script = ExtResource("1_feb5d")

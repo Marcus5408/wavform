@@ -107,3 +107,11 @@ func _draw():
         var normalized_height = (bar_height - MIN_BAR_HEIGHT) / float(WAVEFORM_HEIGHT - MIN_BAR_HEIGHT)
         var color = Color.from_hsv(normalized_height, 1.0, 1.0, 0.5)
         draw_rect(Rect2(Vector2(x, y), Vector2(BAR_WIDTH, bar_height)), color)
+
+
+func fade_out_song():
+    var player = $AudioStreamPlayer
+    if player.playing:
+        var tween = create_tween()
+        tween.tween_property(player, "volume_db", -80, 2.0)
+        tween.tween_callback(Callable(player, "stop"))

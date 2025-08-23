@@ -2,7 +2,7 @@
 
 ![WAV:FORM](images/wavform.png)
 
-![Made for Hack Club Roulette](https://img.shields.io/badge/Hack%20Club-Mob%20Games-FF698A?style=for-the-badge&logo=hackclub&link=mob-games.hackclub.dev)
+![Made for Hack Club Roulette](https://img.shields.io/badge/Hack%20Club-Roulette-FF698A?style=for-the-badge&logo=hackclub&link=roulette.hackclub.com)
 ![Made with Godot](https://img.shields.io/badge/Made%20with-Godot-478CBF?style=for-the-badge&logo=godotengine&link=godotengine.org)
 
 ## Hack Club Roulette Spins
